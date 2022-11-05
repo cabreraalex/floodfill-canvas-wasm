@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <title>hello-wasm example</title>
+  </head>
+  <body>
+    <canvas width="100" height="100" />
+    <script type="module">
+      const c = document.querySelector("canvas");
+      const context = c.getContext("2d");
+
+      context.beginPath();
+      context.arc(20, 20, 40, 0, 2 * Math.PI, false);
+      context.fillStyle = "green";
+      context.fill();
+      context.lineWidth = 5;
+      context.strokeStyle = "#003300";
+      context.stroke();
+
+      const data = context.getImageData(0, 0, 100, 100).data;
+
+      import init, { floodfill } from "./pkg/wasm_canvas_floodfill.js";
+      init().then(() => {
+        console.log(data);
+        const newData = floodfill(data, [0, 0], 100, 100, [0, 0, 0]);
+        console.log(newData);
+        const imgData = new ImageData(newData, 100, 100);
+        context.putImageData(imgData, 0, 0);
+      });
+    </script>
+  </body>
+</html>
